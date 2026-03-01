@@ -8,6 +8,18 @@ Locust load test setup for KubeRay incremental upgrade.
 
 ## Experiments
 
-- `fruit` v0: 1 head, 1 worker
-  - RPS ~ 100
+- `fruit` v0
+  - 1 head, 1 worker
   - 2 ProxyActors with low CPU load (~ 0 on head, ~ 30 on the worker)
+  - RPS ~ 100
+
+- `simple` v0: 1 head, 1 worker
+  - 1 head, 1 worker
+  - Ray Serve autoscaling (1, 2)
+  - 2 ProxyActors with low CPU load on worker (> 100 on head, < 20 on the worker)
+  - Users 10 -> RPS ~ 800
+
+
+## Problems
+- Limitations on `fruit`
+  - POST with price calculation?
