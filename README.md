@@ -8,12 +8,26 @@ Locust load test setup for KubeRay incremental upgrade.
 
 ## Experiments
 
+### Environment Setup
+
+1. Configure the number of CPUs to align with Buildkite large instance 8 vCPUs
+
+```bash
+orb config set cpu 8
+```
+
+> [!NOTE]
+> 8 vCPUs might map to only 4 physical cores.
+
+2. Run `setup.sh`
+
+
+### Results
+
 | Exp | Ray Serve Autoscaler | Ray Actor Options | K8s Resources | Performance |
 |  ----  | ----  | ---- | ---- | ---- |
 | x | (`min_replicas`, `max_replicas`), `target_ongoing_requests`, `max_ongoing_requests` | `num_cpus` | cpu (req, limit), memory (req, limit) | RPS, Failures (%) |
 | v0 | (1, 2), 2, 6| 2 | (2, 2), (2Gi, 2Gi)| ![v0_prf](https://github.com/JiangJiaWei1103/Incr-Upgrade-Locust/tree/main/assets/v0.png) |
-
-
 
 <details>
   <summary>Deprecated</summary>
