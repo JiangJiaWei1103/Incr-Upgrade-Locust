@@ -26,5 +26,15 @@ Locust load test setup for KubeRay incremental upgrade.
   - Users 10 -> RPS 900+
 
 ## Problems
+
 - Limitations on `fruit`
   - POST with price calculation?
+
+### Test Env Setup
+
+- CI might have the same version mismatch issue as below
+
+```bash
+The Kubernetes version v1.29.0 is not supported by Istio 1.28.3. The minimum supported Kubernetes version is 1.30.
+Proceeding with the installation, but you might experience problems. See https://istio.io/latest/docs/releases/supported-releases/ for a list of supported versions.
+```
