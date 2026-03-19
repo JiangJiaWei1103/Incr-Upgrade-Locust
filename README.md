@@ -8,22 +8,33 @@ Locust load test setup for KubeRay incremental upgrade.
 
 ## Experiments
 
-- `fruit` v0
-  - 1 head, 1 worker
-  - 2 ProxyActors with low CPU load (~ 0 on head, ~ 30 on the worker)
-  - RPS ~ 100
+| Exp | Ray Serve Autoscaler | Ray Actor Options | K8s Resources | Performance |
+|  ----  | ----  | ---- | ---- | ---- |
+| x | (`min_replicas`, `max_replicas`), `target_ongoing_requests`, `max_ongoing_requests` | `num_cpus` | cpu (req, limit), memory (req, limit) | RPS, Failures (%) |
+| v0 | (1, 2), 2, 6| 2 | (2, 2), (2Gi, 2Gi)| ![v0_prf](https://github.com/JiangJiaWei1103/Incr-Upgrade-Locust/tree/main/assets/v0.png) |
 
-- `simple` v0
-  - 1 head, 1 worker
-  - Ray Serve autoscaling (1, 2)
-  - 2 ProxyActors with low CPU load on worker (> 100 on head, < 20 on the worker)
-  - Users 10 -> RPS ~ 800
 
-- `simple` v1
-  - 1 head, 1 worker (scaling up to 3)
-  - Ray Serve autoscaling (1, 3)
-  - 4 ProxyActors with low CPU load on worker (> 100 on head, ~ 35 on the worker)
-  - Users 10 -> RPS 900+
+
+<details>
+  <summary>Deprecated</summary>
+
+  - `fruit` v0
+    - 1 head, 1 worker
+    - 2 ProxyActors with low CPU load (~ 0 on head, ~ 30 on the worker)
+    - RPS ~ 100
+
+  - `simple` v0
+    - 1 head, 1 worker
+    - Ray Serve autoscaling (1, 2)
+    - 2 ProxyActors with low CPU load on worker (> 100 on head, < 20 on the worker)
+    - Users 10 -> RPS ~ 800
+
+  - `simple` v1
+    - 1 head, 1 worker (scaling up to 3)
+    - Ray Serve autoscaling (1, 3)
+    - 4 ProxyActors with low CPU load on worker (> 100 on head, ~ 35 on the worker)
+    - Users 10 -> RPS 900+
+</details>
 
 ## Problems
 
