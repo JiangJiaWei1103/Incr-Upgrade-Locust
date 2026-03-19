@@ -29,6 +29,7 @@ Locust load test setup for KubeRay incremental upgrade.
 
 - Limitations on `fruit`
   - POST with price calculation?
+  - Focus on simple deployment for high-RPS cases (might revisit this limitation in the future)
 
 ### Test Env Setup
 
