@@ -1,6 +1,7 @@
 """Utility functions."""
 import csv
 import json
+import logging
 import subprocess
 import time
 from datetime import datetime
@@ -12,9 +13,16 @@ import yaml
 class RayServiceClient:
     """A thin kubectl wrapper for RayService CRUD operations."""
 
-    def __init__(self, namespace: str = "default", name: str = "simple-locust") -> None:
+    def __init__(
+        self,
+        namespace: str = "default",
+        name: str = "simple-locust",
+        *,
+        logger: logging.Logger | None = None,
+    ) -> None:
         self.namespace = namespace
         self.name = name
+        self.logger = logger
 
     def get(self) -> dict | None:
         result = subprocess.run(
@@ -38,7 +46,11 @@ class RayServiceClient:
         for attempt in range(max_retries):
             rs = self.get()
             if rs is None:
-                print(f"RayService not found, retrying... ({attempt + 1}/{max_retries})")
+                self.logger.info(
+                    "[rayservice_client] RayService not found, retrying... (%s/%s)",
+                    attempt + 1,
+                    max_retries,
+                )
                 time.sleep(0.5)
                 continue
 
@@ -172,7 +184,7 @@ def extract_status(rs_json: dict) -> dict:
     }
 
 
-class StatusLogger:
+class StatusWriter:
     """Snapshots the RayService status and the load test status."""
 
     CSV_FIELDS = [
@@ -189,7 +201,7 @@ class StatusLogger:
         self._writer = csv.DictWriter(self._file, fieldnames=self.CSV_FIELDS)
         self._writer.writeheader()
 
-    def log(self, phase: str, status: dict) -> None:
+    def write_row(self, phase: str, status: dict) -> None:
         row = {
             "timestamp": datetime.now().isoformat(),
             "elapsed_s": round(time.time() - self.start_time, 2),
@@ -266,7 +278,10 @@ class StatusChecker:
             self.prev[field] = cur
 
 
-def get_locust_rps(web_port: int) -> float | None:
+def get_locust_rps(
+    web_port: int,
+    logger: logging.Logger | None = None,
+) -> float | None:
     """Best-effort RPS query via Locust REST API."""
     try:
         import requests
@@ -276,6 +291,30 @@ def get_locust_rps(web_port: int) -> float | None:
                 if stat.get("name") == "Aggregated":
                     return stat.get("current_rps", 0.0)
     except Exception as e:
-        print(f"Error getting Locust RPS: {e}")
+        logger.warning("[get_locust_rps] Error getting Locust RPS: %s", e)
 
     return None
+
+
+class CustomFormatter(logging.Formatter):
+    grey = "\x1b[38;20m"
+    cyan = "\x1b[36;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+
+    _FMT = "%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) | %(message)s"
+    FORMATS = {
+        logging.DEBUG: grey + _FMT + reset,
+        logging.INFO: cyan + _FMT + reset,
+        logging.WARNING: yellow + _FMT + reset,
+        logging.ERROR: red + _FMT + reset,
+        logging.CRITICAL: bold_red + _FMT + reset
+    }
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt, datefmt="%Y-%m-%d %H:%M:%S")
+
+        return formatter.format(record)

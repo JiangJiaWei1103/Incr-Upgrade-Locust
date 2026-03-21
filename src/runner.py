@@ -19,16 +19,17 @@ Prerequisites:
 """
 
 import argparse
-from re import L
+import logging
 import signal
 import subprocess
+import sys
 import time
 from pathlib import Path
 from urllib.parse import urlparse
 
 import yaml
 
-from utils import RayServiceClient, StatusLogger, StatusChecker, get_locust_rps, extract_status
+from utils import RayServiceClient, StatusWriter, StatusChecker, get_locust_rps, extract_status, CustomFormatter
 
 
 class Runner:
@@ -59,11 +60,24 @@ class Runner:
         self.output_dir = self.base_dir / "outputs" / self.scenario["name"]
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # Setup runner logger.
+        self.logger = logging.getLogger(f"runner.{id(self)}")
+        self.logger.handlers.clear()
+        self.logger.setLevel(logging.INFO)
+        self.logger.propagate = False
+        _fh = logging.FileHandler(self.output_dir / "runner.log", encoding="utf-8")
+        _fh.setFormatter(CustomFormatter())
+        self.logger.addHandler(_fh)
+        _sh = logging.StreamHandler(sys.stdout)
+        _sh.setFormatter(CustomFormatter())
+        self.logger.addHandler(_sh)
+
         self.client = RayServiceClient(
             self.rs_cfg.get("namespace", "default"),
             self.rs_cfg["name"],
+            logger=self.logger,
         )
-        self.logger = StatusLogger(self.output_dir / "status_log.csv")
+        self.st_writer = StatusWriter(self.output_dir / "status_log.csv")
         self.checker = StatusChecker()
 
         self.locust_proc = None
@@ -84,30 +98,30 @@ class Runner:
             self._wait_for_completion()
             self._summary()
         except KeyboardInterrupt:
-            print("\n[runner] Interrupted.")
+            self.logger.info("\n[runner] Interrupted.")
         except Exception as exc:
-            print(f"\n[runner] ERROR: {exc}")
+            self.logger.error("\n[runner] ERROR: %s", exc)
             raise
         finally:
             self._cleanup()
 
     def _deploy(self) -> None:
         yaml_path = self.base_dir / self.rs_cfg["yaml"]
-        print(f"[runner] Deploying RayService from {yaml_path}")
+        self.logger.info("[runner] Deploying RayService from %s", yaml_path)
         self.client.apply(str(yaml_path))
         self.phase = "deploying"
 
     def _wait_for_ready(self) -> None:
-        print("[runner] Waiting for RayService ready...")
+        self.logger.info("[runner] Waiting for RayService ready...")
         ddl = time.time() + self.timeouts["rayservice_ready"]
 
         while time.time() < ddl:
             rs = self.client.get()
             if rs is not None:
                 st = extract_status(rs)
-                self.logger.log("wait_for_rs_ready", st)
+                self.st_writer.write_row("wait_for_rs_ready", st)
                 if st and st["ready"] and not st["upgrading"]:
-                    print(f"[runner] Ready. Active cluster: {st['active_cluster']}")
+                    self.logger.info("[runner] Ready. Active cluster: %s", st["active_cluster"])
                     self.phase = "ready"
                     return
             time.sleep(2)
@@ -134,7 +148,10 @@ class Runner:
             return
 
         local_port = parsed.port or self.GATEWAY_LOCAL_PORT 
-        print(f"[runner] Starting port-forward svc/{self.rs_cfg['name']}-gateway-istio {local_port}:{self.GATEWAY_REMOTE_PORT}")
+        self.logger.info(
+            "[runner] Starting port-forward svc/%s-gateway-istio %s:%s",
+            self.rs_cfg["name"], local_port, self.GATEWAY_REMOTE_PORT,
+        )
         self.port_forward_proc = self.client.port_forward_gateway(local_port, self.GATEWAY_REMOTE_PORT)
         time.sleep(1)
 
@@ -154,7 +171,7 @@ class Runner:
             "--autostart",
             "--web-port", str(web_port),
         ]
-        print(f"[runner] Starting Locust (UI at http://localhost:{web_port})")
+        self.logger.info("[runner] Starting Locust (UI at http://localhost:%s)", web_port)
         self.locust_proc = subprocess.Popen(
             cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
@@ -166,7 +183,7 @@ class Runner:
         window = lc["warmup_stable_seconds"]
         web_port = lc.get("web_port", self.LOCUST_WEB_PORT)
 
-        print(f"[runner] Warming up Locust (RPS >= {threshold} for {window}s)...")
+        self.logger.info("[runner] Warming up Locust (RPS >= %s for %ss)...", threshold, window)
         timeout = self.timeouts["locust_warmup"]
         ddl = time.time() + timeout
         stable = 0
@@ -174,13 +191,13 @@ class Runner:
         while time.time() < ddl:
             rs = self.client.get()
             if rs is not None:
-                self.logger.log("locust_warmup", extract_status(rs))
+                self.st_writer.write_row("locust_warmup", extract_status(rs))
 
-            rps = get_locust_rps(web_port)
+            rps = get_locust_rps(web_port, self.logger)
             if rps is not None and rps >= threshold:
                 stable += 1
                 if stable >= window:
-                    print(f"[runner] Locust warmup done. RPS={rps:.0f}")
+                    self.logger.info("[runner] Locust warmup done. RPS=%.0f", rps)
                     return
             else:
                 stable = 0
@@ -191,7 +208,7 @@ class Runner:
     def _run_actions(self) -> None:
         for i, action in enumerate(self.actions):
             name = action["name"]
-            print(f"\n[runner] === Action {i+1}/{len(self.actions)}: {name} ===")
+            self.logger.info("\n[runner] === Action %s/%s: %s ===", i + 1, len(self.actions), name)
 
             # Wait for trigger condition to be met.
             self._wait_for_trigger(name, action.get("when"))
@@ -199,7 +216,7 @@ class Runner:
             # Change RayService cluster spec to trigger upgrade/rollback.
             # TODO(jwj): Need to modify serve config to distinguish between old and new serve applications. 
             cpu = action["worker_cpu"]
-            print(f"[runner] Setting worker CPU to {cpu}")
+            self.logger.info("[runner] Setting worker CPU to %s", cpu)
             self.client.put(cpu)
 
             if name == "rollback":
@@ -207,7 +224,7 @@ class Runner:
             elif name == "upgrade":
                 self.phase = "upgrading"
 
-            print(f"[runner] '{name}' triggered.")
+            self.logger.info("[runner] '%s' triggered.", name)
 
     def _wait_for_trigger(self, action_name: str, condition: dict | None = None) -> None:
         # "warmed_up" triggers upgrade immediately since warmup already completed.
@@ -227,9 +244,9 @@ class Runner:
                 time.sleep(1)
                 continue
 
-            elapsed = self.logger.elapsed()
+            elapsed = self.st_writer.elapsed()
             st = extract_status(rs)
-            self.logger.log(self.phase, st)
+            self.st_writer.write_row(self.phase, st)
 
             if st.get("rolling_back") and not self.checker.active:
                 self.checker.start(st)
@@ -249,16 +266,16 @@ class Runner:
         ddl = time.time() + timeout
         web_port = self.locust_cfg.get("web_port", self.LOCUST_WEB_PORT)
 
-        print(f"\n[runner] === Waiting for completion ===")
+        self.logger.info("\n[runner] === Waiting for completion ===")
         while time.time() < ddl:
             rs = self.client.get()
             if rs is None:
                 time.sleep(1)
                 continue
 
-            elapsed = self.logger.elapsed()
+            elapsed = self.st_writer.elapsed()
             st = extract_status(rs)
-            self.logger.log(self.phase, st)
+            self.st_writer.write_row(self.phase, st)
 
             if st.get("rolling_back") and not self.checker.active:
                 self.checker.start(st)
@@ -267,9 +284,9 @@ class Runner:
 
             self._print_line(st, elapsed, web_port)
             if self._completion_met(self.completion, st):
-                print(f"\n[runner] Completed at {elapsed:.2f}s")
+                self.logger.info("\n[runner] Completed at %.2fs", elapsed)
                 self.phase = "complete"
-                self.logger.log("complete", st)
+                self.st_writer.write_row("complete", st)
                 return
 
             time.sleep(1)
@@ -325,52 +342,58 @@ class Runner:
         if st.get("rolling_back"):
             flags.append("RB")
 
-        rps = get_locust_rps(web_port)
+        rps = get_locust_rps(web_port, self.logger)
         rps_s = f"{rps:.0f}" if rps else "?"
 
-        print(
+        line = (
             f"  [{elapsed:>6.1f}s] {self.phase:<12} | "
             f"Active TC={str(a_tc):>3} TRP={str(a_trp):>3} | "
             f"Pending TC={str(p_tc):>3} TRP={str(p_trp):>3} | "
             f"RPS={rps_s:>4} | {' '.join(flags)}"
         )
+        self.logger.info("%s", line)
 
     def _summary(self):
-        duration = time.time() - self.logger.start_time
-        passed = not self.checker.violations
+        duration = time.time() - self.st_writer.start_time
+        passed = len(self.checker.violations) == 0
         label = "PASS" if passed else "FAIL"
-        print(f"\n{'='*65}")
-        print(f"  SCENARIO : {self.scenario['name']}")
-        print(f"  RESULT   : {label}")
-        print(f"  DURATION : {duration:.2f}s")
-        print(f"  RESULTS  : {self.output_dir}/")
+        self.logger.info("\n%s", "=" * 65)
+        self.logger.info("  SCENARIO : %s", self.scenario["name"])
+        self.logger.info("  RESULT   : %s", label)
+        self.logger.info("  DURATION : %.2fs", duration)
+        self.logger.info("  RESULTS  : %s/", self.output_dir)
         if len(self.checker.violations) > 0:
-            print(f"\n BEHAVIOR VIOLATIONS ({len(self.checker.violations)}):")
+            self.logger.critical("\n BEHAVIOR VIOLATIONS (%s):", len(self.checker.violations))
             for v in self.checker.violations:
-                print(f"    - {v}")
+                self.logger.critical("    - %s", v)
         else:
-            print(f"\n  All monotonicity invariants passed.")
-        print(f"{'='*65}")
+            self.logger.info("\n  All monotonicity invariants passed.")
+        self.logger.info("%s", "=" * 65)
 
     def _cleanup(self):
-        self.logger.close()
+        self.st_writer.close()
         if self.locust_proc is not None and self.locust_proc.poll() is None:
-            print("[runner] Stopping Locust (SIGINT)...")
+            self.logger.info("[runner] Stopping Locust (SIGINT)...")
             self.locust_proc.send_signal(signal.SIGINT)
             try:
                 self.locust_proc.wait(timeout=15)
             except subprocess.TimeoutExpired:
                 self.locust_proc.kill()
         if self.port_forward_proc is not None and self.port_forward_proc.poll() is None:
-            print("[runner] Stopping kubectl port-forward...")
+            self.logger.info("[runner] Stopping kubectl port-forward...")
             self.port_forward_proc.send_signal(signal.SIGINT)
             try:
                 self.port_forward_proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 self.port_forward_proc.kill()
         if self.deploy_rayservice:
-            print("[runner] Deleting RayService...")
+            self.logger.info("[runner] Deleting RayService...")
             self.client.delete()
+
+        for h in self.logger.handlers[:]:
+            self.logger.removeHandler(h)
+            h.close()
+        logging.shutdown()
 
 
 def main():
