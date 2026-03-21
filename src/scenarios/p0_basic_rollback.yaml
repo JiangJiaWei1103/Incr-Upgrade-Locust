@@ -1,0 +1,40 @@
+name: p0_basic_rollback
+description: >
+  P0 baseline: trigger rollback when pending TRP >= 25%,
+  verify traffic returns to active cluster with zero failures.
+
+rayservice:
+  name: simple-locust
+  namespace: default
+  yaml: ../rayservice_simple.yaml
+
+locust:
+  locustfile: ../locustfile_simple.py
+  users: 10
+  spawn_rate: 10
+  web_port: 8089
+  warmup_rps: 900
+  warmup_stable_seconds: 15
+
+actions:
+  - name: upgrade
+    # TODO(jwj): Any problem with small CPU?
+    worker_cpu: "500m"
+
+  - name: rollback
+    when:
+      pending_trp_gte: 25
+    worker_cpu: "2"
+
+completion:
+  active_trp: 100
+  # Must meet the folloiwng conditions.
+  # upgrading: false
+  # rolling_back: false
+  # pending_cluster_empty: true
+
+timeouts:
+  rayservice_ready: 120
+  locust_warmup: 120
+  action: 300
+  completion: 300
