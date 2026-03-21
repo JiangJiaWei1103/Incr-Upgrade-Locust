@@ -208,7 +208,7 @@ class Runner:
     def _run_actions(self) -> None:
         for i, action in enumerate(self.actions):
             name = action["name"]
-            self.logger.info("\n[runner] === Action %s/%s: %s ===", i + 1, len(self.actions), name)
+            self.logger.info("\n[runner] === Action %s/%s: Waiting for %s ===", i + 1, len(self.actions), name)
 
             # Wait for trigger condition to be met.
             self._wait_for_trigger(name, action.get("when"))
@@ -219,10 +219,13 @@ class Runner:
             self.logger.info("[runner] Setting worker CPU to %s", cpu)
             self.client.put(cpu)
 
-            if name == "rollback":
-                self.phase = "rolling_back"
-            elif name == "upgrade":
+            if name == "upgrade":
                 self.phase = "upgrading"
+            elif name == "rollback":
+                self.phase = "rolling_back"
+            elif name == "cancel_rollback":
+                # Resume upgrading.
+                self.phase = "canceling_rollback"
 
             self.logger.info("[runner] '%s' triggered.", name)
 
@@ -248,13 +251,16 @@ class Runner:
             st = extract_status(rs)
             self.st_writer.write_row(self.phase, st)
 
-            if st.get("rolling_back") and not self.checker.active:
-                self.checker.start(st)
-            if self.checker.active:
-                self.checker.check(st, elapsed)
+            if st.get("rolling_back"):
+                if not self.checker.active:
+                    self.checker.start(st)
+                else:
+                    self.checker.check(st, elapsed)
 
             self._print_line(st, elapsed, web_port)
             if self._condition_met(condition, st):
+                # Deactivation is idempotent.
+                self.checker.stop()
                 return
 
             time.sleep(1)
@@ -277,16 +283,18 @@ class Runner:
             st = extract_status(rs)
             self.st_writer.write_row(self.phase, st)
 
-            if st.get("rolling_back") and not self.checker.active:
-                self.checker.start(st)
-            if self.checker.active:
-                self.checker.check(st, elapsed)
+            if st.get("rolling_back"):
+                if not self.checker.active:
+                    self.checker.start(st)
+                else:
+                    self.checker.check(st, elapsed)
 
             self._print_line(st, elapsed, web_port)
             if self._completion_met(self.completion, st):
                 self.logger.info("\n[runner] Completed at %.2fs", elapsed)
                 self.phase = "complete"
                 self.st_writer.write_row("complete", st)
+                self.checker.stop()
                 return
 
             time.sleep(1)
@@ -301,6 +309,10 @@ class Runner:
         for key, val in condition.items():
             if key == "pending_trp_gte":
                 v = st.get("pending_trp")
+                if v is None or v < val:
+                    return False
+            elif key == "active_trp_gte":
+                v = st.get("active_trp")
                 if v is None or v < val:
                     return False
             else:
@@ -346,7 +358,7 @@ class Runner:
         rps_s = f"{rps:.0f}" if rps else "?"
 
         line = (
-            f"  [{elapsed:>6.1f}s] {self.phase:<12} | "
+            f" [{elapsed:>6.2f}s] {self.phase:<12} | "
             f"Active TC={str(a_tc):>3} TRP={str(a_trp):>3} | "
             f"Pending TC={str(p_tc):>3} TRP={str(p_trp):>3} | "
             f"RPS={rps_s:>4} | {' '.join(flags)}"

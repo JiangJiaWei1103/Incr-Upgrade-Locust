@@ -277,6 +277,8 @@ class StatusChecker:
 
             self.prev[field] = cur
 
+    def stop(self) -> None:
+        self.active = False
 
 def get_locust_rps(
     web_port: int,
