@@ -7,9 +7,9 @@ spec:
     type: NewClusterWithIncrementalUpgrade
     clusterUpgradeOptions:
       gatewayClassName: istio
-      stepSizePercent: 10
-      intervalSeconds: 30
-      maxSurgePercent: 20
+      maxSurgePercent: 50
+      stepSizePercent: 25
+      intervalSeconds: 10
   serveConfigV2: |
     applications:
       - name: simple_app

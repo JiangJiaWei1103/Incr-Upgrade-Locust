@@ -1,8 +1,10 @@
-name: p0_basic_rollback
-description: >
-  P0 baseline: trigger rollback when pending TRP >= 25%,
-  verify traffic returns to active cluster with zero failures.
+name: example
+description: |-
+  1. Trigger upgrade once the Locust warmup is done
+  2. Trigger rollback when pending TRP >= 25%
 
+# At this stage, we can keep RayService config simple.
+# So, you don't need to modify this section.
 rayservice:
   name: simple-locust
   namespace: default
@@ -13,7 +15,8 @@ locust:
   users: 10
   spawn_rate: 10
   web_port: 8089
-  warmup_rps: 900
+  # You might need to lower the RPS threshold based on your test environment.
+  warmup_rps: 1000
   warmup_stable_seconds: 15
 
 actions:
