@@ -1,21 +1,14 @@
 #!/usr/bin/env python3
 """
-Automated rollback load testing orchestrator for KubeRay RayService incremental upgrade.
+This script is used to run load testsing for incremental upgrade/rollback of KubeRay RayService.
 
 Usage:
-    cd rollback/
-    python orchestrator.py --scenario scenarios/p0_basic_rollback.yaml
+    # Setup environment.
+    ./setup.sh
 
-    # Skip deploy if RayService already running:
-    python orchestrator.py --scenario scenarios/p0_basic_rollback.yaml --no-deploy
-
-    # Override Gateway host (e.g., via port-forward):
-    python orchestrator.py --scenario scenarios/p0_basic_rollback.yaml --host http://localhost:8080
-
-Prerequisites:
-    - Kind cluster with Istio + MetalLB ready (run setup.sh)
-    - kubectl configured to access the cluster
-    - pip install locust pyyaml requests
+    # Run load testing.
+    cd src/
+    python runner.py --scenario scenarios/example.yaml --deploy-rayservice
 """
 
 import argparse
@@ -90,7 +83,6 @@ class Runner:
             if self.deploy_rayservice:
                 self._deploy()
             self._wait_for_ready()
-            # self._resolve_host()
             self._port_forward_gateway()
             self._start_locust()
             self._wait_for_warmup()
@@ -128,20 +120,6 @@ class Runner:
             time.sleep(2)
 
         raise TimeoutError("RayService not ready in time")
-
-    # def _resolve_host(self):
-    #     if self.host:
-    #         print(f"[runner] Using host: {self.host}")
-    #         return
-
-    #     ip = self.client.get_gateway_ip()
-    #     if ip:
-    #         self.host = f"http://{ip}"
-    #         print(f"[runner] Resolved Gateway IP: {self.host}")
-    #     else:
-    #         raise RuntimeError(
-    #             "Cannot resolve Gateway IP. Use --host or set up port-forward."
-    #         )
 
     def _port_forward_gateway(self) -> None:
         parsed = urlparse(self.host or "")
@@ -231,11 +209,8 @@ class Runner:
             self.logger.info("[runner] '%s' triggered.", name)
 
     def _wait_for_trigger(self, action_name: str, condition: dict | None = None) -> None:
-        # "warmed_up" triggers upgrade immediately since warmup already completed.
-        # TODO(jwj): Seems redundant. Remove this condition. "warmed_up" must correspond to upgrade.
-        # if condition == "warmed_up":
-        #     return
         if condition is None:
+            # No condition means "warmed_up", which triggers upgrade immediately since warmup already completed.
             return
 
         timeout = self.timeouts["action"]

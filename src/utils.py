@@ -72,7 +72,6 @@ class RayServiceClient:
             if result.returncode == 0:
                 return
 
-            # if "the object has been modified" in result.stderr and attempt < max_retries - 1:
             if len(result.stderr) > 0 and attempt < max_retries - 1:
                 time.sleep(0.5)
                 continue
@@ -84,18 +83,6 @@ class RayServiceClient:
              "-n", self.namespace, "--ignore-not-found"],
             capture_output=True, text=True,
         )
-
-    # def get_gateway_ip(self) -> str | None:
-    #     """Unused now."""
-    #     gw_name = f"{self.name}-gateway"
-    #     result = subprocess.run(
-    #         ["kubectl", "get", "gateway", gw_name, "-n", self.namespace,
-    #          "-o", "jsonpath={.status.addresses[0].value}"],
-    #         capture_output=True, text=True,
-    #     )
-    #     if result.returncode == 0 and result.stdout.strip():
-    #         return result.stdout.strip()
-    #     return None
 
     def port_forward_gateway(self, local_port: int = 8080, remote_port: int = 80) -> subprocess.Popen:
         """Port forward the Gateway service as the locust entry point."""
@@ -146,8 +133,6 @@ def _k8s_cpu_to_num_cpus(cpu: str) -> float:
         v = float(s[:-1]) / 1000.0
     else:
         v = float(s)
-    # if v == int(v):
-    #     return int(v)
 
     return v
 
