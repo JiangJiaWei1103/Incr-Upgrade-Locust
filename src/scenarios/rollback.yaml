@@ -1,15 +1,14 @@
-name: cancal-rollback
+name: rollback
 description: |-
-  Expected process: A -> B -> A -> B
+  Expected process: A -> B -> A
   Action triggering conditions:
     1. Trigger upgrade once the Locust warmup is done
-    2. Trigger rollback when pending TRP >= 40%
-    3. Cancel rollback when active TRP >= 80%
+    2. Trigger rollback when pending TRP >= 25%
 
 rayservice:
   name: simple-locust
   namespace: default
-  yaml: ../ray-service.conservative.yaml
+  yaml: ../ray-service.standard.yaml
 
 locust:
   locustfile: ../locustfile_simple.py
@@ -22,21 +21,16 @@ locust:
 
 actions:
   - name: upgrade
-    worker_cpu: "1.25"
+    worker_cpu: "500m"
 
   - name: rollback
     when:
-      pending_trp_gte: 40
+      pending_trp_gte: 25
     worker_cpu: "2"
-
-  - name: cancel_rollback
-    when:
-      active_trp_gte: 80
-    worker_cpu: "1.25"
 
 completion:
   active_trp: 100
-  worker_cpu: "1.25"
+  worker_cpu: "2"
   # Must meet the folloiwng conditions.
   # upgrading: false
   # rolling_back: false

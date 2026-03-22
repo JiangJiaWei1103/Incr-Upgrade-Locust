@@ -1,10 +1,10 @@
-name: cancal-rollback
+name: third-spec
 description: |-
-  Expected process: A -> B -> A -> B
+  Expected process: A -> B -> A -> C
   Action triggering conditions:
     1. Trigger upgrade once the Locust warmup is done
     2. Trigger rollback when pending TRP >= 40%
-    3. Cancel rollback when active TRP >= 80%
+    3. Trigger upgrade again with a new cluster spec when active TRP >= 80%
 
 rayservice:
   name: simple-locust
@@ -29,14 +29,14 @@ actions:
       pending_trp_gte: 40
     worker_cpu: "2"
 
-  - name: cancel_rollback
+  - name: upgrade # Or a new action called upgrade_new_spec? 
     when:
       active_trp_gte: 80
-    worker_cpu: "1.25"
+    worker_cpu: "1"
 
 completion:
   active_trp: 100
-  worker_cpu: "1.25"
+  worker_cpu: "1"
   # Must meet the folloiwng conditions.
   # upgrading: false
   # rolling_back: false
