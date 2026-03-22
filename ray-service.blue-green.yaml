@@ -1,0 +1,72 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: simple-locust
+spec:
+  upgradeStrategy:
+    type: NewClusterWithIncrementalUpgrade
+    clusterUpgradeOptions:
+      gatewayClassName: istio
+      maxSurgePercent: 100
+      stepSizePercent: 100
+      intervalSeconds: 1
+  serveConfigV2: |
+    applications:
+      - name: simple_app
+        import_path: simple_serve.app
+        route_prefix: /test
+        runtime_env:
+          working_dir: "https://github.com/jiangjiawei1103/incr-upgrade-locust/archive/main.zip"
+        deployments:
+          - name: SimpleDeployment
+            autoscaling_config:
+              min_replicas: 1
+              max_replicas: 2
+              target_ongoing_requests: 2
+              # Since our simple deployment is nearly an empty function, the requests can be processed
+              # extremely quickly. Increasing max_ongoing_requests makes no difference (we tried 100).
+              max_ongoing_requests: 6
+              upscale_delay_s: 0.5
+            ray_actor_options:
+              num_cpus: 2
+  rayClusterConfig:
+    rayVersion: "2.49.2"
+    enableInTreeAutoscaling: true
+    headGroupSpec:
+      rayStartParams:
+        num-cpus: "0"
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.49.2
+              ports:
+                - containerPort: 6379
+                  name: gcs-server
+                - containerPort: 8265
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+                - containerPort: 8000
+                  name: serve
+    workerGroupSpecs:
+      - groupName: small-group
+        replicas: 1
+        minReplicas: 1
+        maxReplicas: 2
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.49.2
+                lifecycle:
+                  preStop:
+                    exec:
+                      command: ["/bin/sh", "-c", "ray stop"]
+                resources:
+                  requests:
+                    cpu: "2"
+                    memory: "2Gi"
+                  limits:
+                    cpu: "2"
+                    memory: "2Gi"

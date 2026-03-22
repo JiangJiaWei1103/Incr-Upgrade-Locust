@@ -96,6 +96,7 @@ class Runner:
             self._wait_for_warmup()
             self._run_actions()
             self._wait_for_completion()
+            self._check_rayservice_spec()
             self._summary()
         except KeyboardInterrupt:
             self.logger.info("\n[runner] Interrupted.")
@@ -261,6 +262,7 @@ class Runner:
             if self._condition_met(condition, st):
                 # Deactivation is idempotent.
                 self.checker.stop()
+                self._print_line(st, elapsed, web_port, finalized=True)
                 return
 
             time.sleep(1)
@@ -295,11 +297,56 @@ class Runner:
                 self.phase = "complete"
                 self.st_writer.write_row("complete", st)
                 self.checker.stop()
+                self._print_line(st, elapsed, web_port, finalized=True)
                 return
 
             time.sleep(1)
 
         raise TimeoutError(f"Completion timed out after {timeout:.2f}s")
+
+    def _check_rayservice_spec(self) -> None:
+        """Check if the RayService spec meets the desired spec after completion.
+
+        This final check passes only if all the following conditions are met:
+        1. ray_actor_options.num_cpus in the serve config matches the desired CPU
+        2. workerGroupSpecs[].template.spec.containers[].resources.requests.cpu matches the desired CPU
+        3. workerGroupSpecs[].template.spec.containers[].resources.limits.cpu matches the desired CPU
+
+        TODO(jwj): Need to consider any other applications fields?
+        """
+        self.logger.info("[runner] Checking RayService spec after completion...")
+        desired_cpu = float(self.completion["worker_cpu"])
+        if desired_cpu is None:
+            raise ValueError("You must specify the desired CPU in the completion section.")
+
+        rs = self.client.get()
+        if rs is None:
+            raise RuntimeError("RayService not found after completion")
+
+        for wg in rs["spec"]["rayClusterConfig"]["workerGroupSpecs"]:
+            for container in wg["template"]["spec"]["containers"]:
+                if container["name"] == "ray-worker":
+                    for rsc_key in ["requests", "limits"]:
+                        cur_cpu = float(container["resources"][rsc_key]["cpu"])
+                        if cur_cpu != desired_cpu:
+                            raise RuntimeError(
+                                f"Worker {rsc_key}.cpu does not match the desired CPU: "
+                                f"current {cur_cpu}, desired {desired_cpu}"
+                            )
+
+        rs_spec = rs["spec"]
+        self.logger.info("[runner] RayService spec: %s", rs_spec)
+        sc = rs_spec.get("serveConfigV2")
+        data = yaml.safe_load(sc)
+        for app in data.get("applications", []):
+            for deploy in app.get("deployments", []):
+                opts = deploy.get("ray_actor_options", {})
+                cur_cpu = float(opts.get("num_cpus"))
+                if cur_cpu != desired_cpu:
+                    raise RuntimeError(
+                        f"Serve config does not match the desired CPU: "
+                        f"current {cur_cpu}, desired {desired_cpu}"
+                    )
 
     @staticmethod
     def _condition_met(condition: dict, st: dict) -> bool:
@@ -324,6 +371,7 @@ class Runner:
     @staticmethod
     def _completion_met(completion: dict, st: dict) -> bool:
         if not (
+            # Must meet the following conditions.
             not st.get("upgrading")
             and not st.get("rolling_back")
             and st.get("pending_cluster") == ""
@@ -336,8 +384,15 @@ class Runner:
 
         return True
 
-    def _print_line(self, st: dict, elapsed: float, web_port: int) -> None:
-        if elapsed - self._last_print < self.PRINT_INTERVAL:
+    def _print_line(self, st: dict, elapsed: float, web_port: int, finalized: bool = False) -> None:
+        """Print status info periodically.
+
+        Note that the finalized line is printed regardless of the PRINT_INTERVAL.
+        finalized is True when:
+        1. An action condition is met
+        2. The load test is completed
+        """
+        if elapsed - self._last_print < self.PRINT_INTERVAL and not finalized:
             return
         self._last_print = elapsed
 

@@ -8,7 +8,7 @@ description: |-
 rayservice:
   name: simple-locust
   namespace: default
-  yaml: ../rayservice_simple.yaml
+  yaml: ../ray-service.standard.yaml
 
 locust:
   locustfile: ../locustfile_simple.py
@@ -31,6 +31,7 @@ actions:
 
 completion:
   active_trp: 100
+  worker_cpu: "2"
   # Must meet the folloiwng conditions.
   # upgrading: false
   # rolling_back: false
