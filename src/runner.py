@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script is used to run load testsing for incremental upgrade/rollback of KubeRay RayService.
+This script is used to run load testing for incremental upgrade/rollback of KubeRay RayService.
 
 Usage:
     # Setup environment.
@@ -8,7 +8,7 @@ Usage:
 
     # Run load testing.
     cd src/
-    python runner.py --scenario scenarios/example.yaml --deploy-rayservice
+    python3 runner.py --scenario scenarios/example.yaml --deploy-rayservice
 """
 
 import argparse
@@ -227,6 +227,7 @@ class Runner:
             st = extract_status(rs)
             self.st_writer.write_row(self.phase, st)
 
+            # Validate monotonicity during rollback.
             if st.get("rolling_back"):
                 if not self.checker.active:
                     self.checker.start(st)
@@ -349,6 +350,7 @@ class Runner:
             # Must meet the following conditions.
             not st.get("upgrading")
             and not st.get("rolling_back")
+            # TODO(jwj): Not sure if empty string is sufficient, might need to make sure CR object is deleted.
             and st.get("pending_cluster") == ""
         ):
             return False

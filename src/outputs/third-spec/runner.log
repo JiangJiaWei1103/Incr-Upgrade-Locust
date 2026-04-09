@@ -1,0 +1,107 @@
+[36;20m2026-04-09 10:10:52 [INFO] (runner.py:103) | [runner] Deploying RayService from /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/../ray-service.conservative.yaml[0m
+[36;20m2026-04-09 10:10:52 [INFO] (runner.py:108) | [runner] Waiting for RayService ready...[0m
+[36;20m2026-04-09 10:11:21 [INFO] (runner.py:117) | [runner] Ready. Active cluster: simple-locust-2dzwj[0m
+[36;20m2026-04-09 10:11:21 [INFO] (runner.py:130) | [runner] Starting port-forward svc/simple-locust-gateway-istio 8080:80[0m
+[36;20m2026-04-09 10:11:22 [INFO] (runner.py:153) | [runner] Starting Locust (UI at http://localhost:8089)[0m
+[36;20m2026-04-09 10:11:22 [INFO] (runner.py:165) | [runner] Warming up Locust (RPS >= 1000 for 15s)...[0m
+[33;20m2026-04-09 10:11:22 [WARNING] (utils.py:281) | [get_locust_rps] Error getting Locust RPS: HTTPConnectionPool(host='localhost', port=8089): Max retries exceeded with url: /stats/requests (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8089): Failed to establish a new connection: [Errno 61] Connection refused"))[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:179) | [runner] Locust warmup done. RPS=1454[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:190) | 
+[runner] === Action 1/3: Waiting for upgrade ===[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:198) | [runner] Setting worker CPU to 1.25[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:209) | [runner] 'upgrade' triggered.[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:190) | 
+[runner] === Action 2/3: Waiting for rollback ===[0m
+[36;20m2026-04-09 10:12:03 [INFO] (runner.py:398) |  [ 71.37s] upgrading    | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=1454 | UPG[0m
+[36;20m2026-04-09 10:12:06 [INFO] (runner.py:398) |  [ 74.56s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1466 | UPG[0m
+[36;20m2026-04-09 10:12:10 [INFO] (runner.py:398) |  [ 77.78s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1304 | UPG[0m
+[36;20m2026-04-09 10:12:13 [INFO] (runner.py:398) |  [ 80.95s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1240 | UPG[0m
+[36;20m2026-04-09 10:12:16 [INFO] (runner.py:398) |  [ 84.12s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1222 | UPG[0m
+[36;20m2026-04-09 10:12:19 [INFO] (runner.py:398) |  [ 87.31s] upgrading    | Active TC=100 TRP=100 | Pending TC= 20 TRP=  0 | RPS=1234 | UPG[0m
+[36;20m2026-04-09 10:12:22 [INFO] (runner.py:398) |  [ 90.50s] upgrading    | Active TC=100 TRP=100 | Pending TC= 20 TRP=  0 | RPS=1337 | UPG[0m
+[36;20m2026-04-09 10:12:26 [INFO] (runner.py:398) |  [ 93.68s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1280 | UPG[0m
+[36;20m2026-04-09 10:12:29 [INFO] (runner.py:398) |  [ 96.86s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1309 | UPG[0m
+[36;20m2026-04-09 10:12:32 [INFO] (runner.py:398) |  [100.02s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1307 | UPG[0m
+[36;20m2026-04-09 10:12:35 [INFO] (runner.py:398) |  [103.20s] upgrading    | Active TC=100 TRP= 80 | Pending TC= 20 TRP= 20 | RPS=1353 | UPG[0m
+[36;20m2026-04-09 10:12:38 [INFO] (runner.py:398) |  [106.39s] upgrading    | Active TC= 80 TRP= 80 | Pending TC= 20 TRP= 20 | RPS=1387 | UPG[0m
+[36;20m2026-04-09 10:12:41 [INFO] (runner.py:398) |  [109.56s] upgrading    | Active TC= 80 TRP= 80 | Pending TC= 40 TRP= 20 | RPS=1418 | UPG[0m
+[36;20m2026-04-09 10:12:45 [INFO] (runner.py:398) |  [112.73s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1405 | UPG[0m
+[36;20m2026-04-09 10:12:48 [INFO] (runner.py:398) |  [115.90s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1400 | UPG[0m
+[36;20m2026-04-09 10:12:51 [INFO] (runner.py:398) |  [119.08s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1402 | UPG[0m
+[36;20m2026-04-09 10:12:54 [INFO] (runner.py:398) |  [122.24s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1385 | UPG[0m
+[36;20m2026-04-09 10:12:55 [INFO] (runner.py:398) |  [123.31s] upgrading    | Active TC= 80 TRP= 60 | Pending TC= 40 TRP= 40 | RPS=1385 | UPG[0m
+[36;20m2026-04-09 10:12:55 [INFO] (runner.py:198) | [runner] Setting worker CPU to 2[0m
+[36;20m2026-04-09 10:12:55 [INFO] (runner.py:209) | [runner] 'rollback' triggered.[0m
+[36;20m2026-04-09 10:12:55 [INFO] (runner.py:190) | 
+[runner] === Action 3/3: Waiting for upgrade ===[0m
+[36;20m2026-04-09 10:12:59 [INFO] (runner.py:398) |  [126.69s] rolling_back | Active TC= 80 TRP= 60 | Pending TC= 40 TRP= 40 | RPS=1234 | UPG RB[0m
+[36;20m2026-04-09 10:13:02 [INFO] (runner.py:398) |  [129.88s] rolling_back | Active TC= 80 TRP= 60 | Pending TC= 40 TRP= 40 | RPS= 963 | UPG RB[0m
+[36;20m2026-04-09 10:13:05 [INFO] (runner.py:398) |  [133.06s] rolling_back | Active TC= 80 TRP= 60 | Pending TC= 40 TRP= 40 | RPS= 965 | UPG RB[0m
+[36;20m2026-04-09 10:13:08 [INFO] (runner.py:398) |  [136.28s] rolling_back | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS= 962 | UPG RB[0m
+[36;20m2026-04-09 10:13:11 [INFO] (runner.py:398) |  [139.45s] rolling_back | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1290 | UPG RB[0m
+[36;20m2026-04-09 10:13:14 [INFO] (runner.py:398) |  [142.63s] rolling_back | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1300 | UPG RB[0m
+[36;20m2026-04-09 10:13:16 [INFO] (runner.py:398) |  [143.69s] rolling_back | Active TC= 80 TRP= 80 | Pending TC= 40 TRP= 20 | RPS=1300 | UPG RB[0m
+[36;20m2026-04-09 10:13:16 [INFO] (runner.py:198) | [runner] Setting worker CPU to 1[0m
+[36;20m2026-04-09 10:13:16 [INFO] (runner.py:209) | [runner] 'upgrade' triggered.[0m
+[36;20m2026-04-09 10:13:16 [INFO] (runner.py:253) | 
+[runner] === Waiting for completion ===[0m
+[36;20m2026-04-09 10:13:19 [INFO] (runner.py:398) |  [147.08s] upgrading    | Active TC=100 TRP= 80 | Pending TC= 20 TRP= 20 | RPS=1193 | UPG RB[0m
+[36;20m2026-04-09 10:13:22 [INFO] (runner.py:398) |  [150.27s] upgrading    | Active TC=100 TRP= 80 | Pending TC= 20 TRP= 20 | RPS= 947 | UPG RB[0m
+[36;20m2026-04-09 10:13:25 [INFO] (runner.py:398) |  [153.45s] upgrading    | Active TC=100 TRP= 80 | Pending TC= 20 TRP= 20 | RPS= 929 | UPG RB[0m
+[36;20m2026-04-09 10:13:28 [INFO] (runner.py:398) |  [156.62s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS= 958 | UPG RB[0m
+[36;20m2026-04-09 10:13:32 [INFO] (runner.py:398) |  [159.79s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1367 | UPG RB[0m
+[36;20m2026-04-09 10:13:35 [INFO] (runner.py:398) |  [162.96s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1390 | UPG RB[0m
+[36;20m2026-04-09 10:13:38 [INFO] (runner.py:398) |  [166.13s] upgrading    | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=1415 | UPG[0m
+[36;20m2026-04-09 10:13:41 [INFO] (runner.py:398) |  [169.30s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1440 | UPG[0m
+[36;20m2026-04-09 10:13:44 [INFO] (runner.py:398) |  [172.50s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1381 | UPG[0m
+[36;20m2026-04-09 10:13:48 [INFO] (runner.py:398) |  [175.69s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1184 | UPG[0m
+[36;20m2026-04-09 10:13:51 [INFO] (runner.py:398) |  [178.87s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1154 | UPG[0m
+[36;20m2026-04-09 10:13:54 [INFO] (runner.py:398) |  [182.07s] upgrading    | Active TC=100 TRP=100 | Pending TC= 20 TRP=  0 | RPS=1159 | UPG[0m
+[36;20m2026-04-09 10:13:57 [INFO] (runner.py:398) |  [185.24s] upgrading    | Active TC=100 TRP=100 | Pending TC= 20 TRP=  0 | RPS=1288 | UPG[0m
+[36;20m2026-04-09 10:14:00 [INFO] (runner.py:398) |  [188.43s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1269 | UPG[0m
+[36;20m2026-04-09 10:14:03 [INFO] (runner.py:398) |  [191.61s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1279 | UPG[0m
+[36;20m2026-04-09 10:14:07 [INFO] (runner.py:398) |  [194.78s] upgrading    | Active TC=100 TRP= 90 | Pending TC= 20 TRP= 10 | RPS=1342 | UPG[0m
+[36;20m2026-04-09 10:14:10 [INFO] (runner.py:398) |  [197.95s] upgrading    | Active TC=100 TRP= 80 | Pending TC= 20 TRP= 20 | RPS=1376 | UPG[0m
+[36;20m2026-04-09 10:14:13 [INFO] (runner.py:398) |  [201.12s] upgrading    | Active TC= 80 TRP= 80 | Pending TC= 20 TRP= 20 | RPS=1407 | UPG[0m
+[36;20m2026-04-09 10:14:16 [INFO] (runner.py:398) |  [204.28s] upgrading    | Active TC= 80 TRP= 80 | Pending TC= 40 TRP= 20 | RPS=1410 | UPG[0m
+[36;20m2026-04-09 10:14:19 [INFO] (runner.py:398) |  [207.44s] upgrading    | Active TC= 80 TRP= 80 | Pending TC= 40 TRP= 20 | RPS=1407 | UPG[0m
+[36;20m2026-04-09 10:14:22 [INFO] (runner.py:398) |  [210.62s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1411 | UPG[0m
+[36;20m2026-04-09 10:14:26 [INFO] (runner.py:398) |  [213.79s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1410 | UPG[0m
+[36;20m2026-04-09 10:14:29 [INFO] (runner.py:398) |  [216.95s] upgrading    | Active TC= 80 TRP= 70 | Pending TC= 40 TRP= 30 | RPS=1407 | UPG[0m
+[36;20m2026-04-09 10:14:32 [INFO] (runner.py:398) |  [220.11s] upgrading    | Active TC= 80 TRP= 60 | Pending TC= 40 TRP= 40 | RPS=1390 | UPG[0m
+[36;20m2026-04-09 10:14:35 [INFO] (runner.py:398) |  [223.27s] upgrading    | Active TC= 60 TRP= 60 | Pending TC= 60 TRP= 40 | RPS=1320 | UPG[0m
+[36;20m2026-04-09 10:14:38 [INFO] (runner.py:398) |  [226.44s] upgrading    | Active TC= 60 TRP= 60 | Pending TC= 60 TRP= 40 | RPS=1260 | UPG[0m
+[36;20m2026-04-09 10:14:41 [INFO] (runner.py:398) |  [229.62s] upgrading    | Active TC= 60 TRP= 50 | Pending TC= 60 TRP= 50 | RPS=1217 | UPG[0m
+[36;20m2026-04-09 10:14:45 [INFO] (runner.py:398) |  [232.79s] upgrading    | Active TC= 60 TRP= 50 | Pending TC= 60 TRP= 50 | RPS=1136 | UPG[0m
+[36;20m2026-04-09 10:14:48 [INFO] (runner.py:398) |  [235.95s] upgrading    | Active TC= 60 TRP= 50 | Pending TC= 60 TRP= 50 | RPS=1062 | UPG[0m
+[36;20m2026-04-09 10:14:51 [INFO] (runner.py:398) |  [239.11s] upgrading    | Active TC= 60 TRP= 40 | Pending TC= 60 TRP= 60 | RPS= 972 | UPG[0m
+[36;20m2026-04-09 10:14:54 [INFO] (runner.py:398) |  [242.28s] upgrading    | Active TC= 40 TRP= 40 | Pending TC= 60 TRP= 60 | RPS= 916 | UPG[0m
+[36;20m2026-04-09 10:14:57 [INFO] (runner.py:398) |  [245.43s] upgrading    | Active TC= 40 TRP= 40 | Pending TC= 80 TRP= 60 | RPS= 872 | UPG[0m
+[36;20m2026-04-09 10:15:00 [INFO] (runner.py:398) |  [248.59s] upgrading    | Active TC= 40 TRP= 40 | Pending TC= 80 TRP= 60 | RPS= 830 | UPG[0m
+[36;20m2026-04-09 10:15:04 [INFO] (runner.py:398) |  [251.73s] upgrading    | Active TC= 40 TRP= 30 | Pending TC= 80 TRP= 70 | RPS= 777 | UPG[0m
+[36;20m2026-04-09 10:15:07 [INFO] (runner.py:398) |  [254.90s] upgrading    | Active TC= 40 TRP= 30 | Pending TC= 80 TRP= 70 | RPS= 761 | UPG[0m
+[36;20m2026-04-09 10:15:10 [INFO] (runner.py:398) |  [258.05s] upgrading    | Active TC= 40 TRP= 30 | Pending TC= 80 TRP= 70 | RPS= 722 | UPG[0m
+[36;20m2026-04-09 10:15:13 [INFO] (runner.py:398) |  [261.22s] upgrading    | Active TC= 40 TRP= 20 | Pending TC= 80 TRP= 80 | RPS= 701 | UPG[0m
+[36;20m2026-04-09 10:15:16 [INFO] (runner.py:398) |  [264.38s] upgrading    | Active TC= 20 TRP= 20 | Pending TC=100 TRP= 80 | RPS= 748 | UPG[0m
+[36;20m2026-04-09 10:15:19 [INFO] (runner.py:398) |  [267.54s] upgrading    | Active TC= 20 TRP= 20 | Pending TC=100 TRP= 80 | RPS= 809 | UPG[0m
+[36;20m2026-04-09 10:15:23 [INFO] (runner.py:398) |  [270.70s] upgrading    | Active TC= 20 TRP= 10 | Pending TC=100 TRP= 90 | RPS= 936 | UPG[0m
+[36;20m2026-04-09 10:15:26 [INFO] (runner.py:398) |  [273.85s] upgrading    | Active TC= 20 TRP= 10 | Pending TC=100 TRP= 90 | RPS= 960 | UPG[0m
+[36;20m2026-04-09 10:15:29 [INFO] (runner.py:398) |  [277.02s] upgrading    | Active TC= 20 TRP= 10 | Pending TC=100 TRP= 90 | RPS= 979 | UPG[0m
+[36;20m2026-04-09 10:15:32 [INFO] (runner.py:398) |  [280.18s] upgrading    | Active TC= 20 TRP=  0 | Pending TC=100 TRP=100 | RPS= 950 | UPG[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:272) | 
+[runner] Completed at 282.28s[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:398) |  [282.28s] complete     | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS= 923 | [0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:293) | [runner] Checking RayService spec after completion...[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:314) | [runner] RayService spec: {'rayClusterConfig': {'enableInTreeAutoscaling': True, 'headGroupSpec': {'rayStartParams': {'num-cpus': '0'}, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'name': 'ray-head', 'ports': [{'containerPort': 6379, 'name': 'gcs-server', 'protocol': 'TCP'}, {'containerPort': 8265, 'name': 'dashboard', 'protocol': 'TCP'}, {'containerPort': 10001, 'name': 'client', 'protocol': 'TCP'}, {'containerPort': 8000, 'name': 'serve', 'protocol': 'TCP'}]}]}}}, 'rayVersion': '2.49.2', 'workerGroupSpecs': [{'groupName': 'small-group', 'maxReplicas': 2, 'minReplicas': 1, 'numOfHosts': 1, 'replicas': 1, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'lifecycle': {'preStop': {'exec': {'command': ['/bin/sh', '-c', 'ray stop']}}}, 'name': 'ray-worker', 'resources': {'limits': {'cpu': '1', 'memory': '2Gi'}, 'requests': {'cpu': '1', 'memory': '2Gi'}}}]}}}]}, 'serveConfigV2': 'applications:\n- name: simple_app\n  import_path: simple_serve.app\n  route_prefix: /test\n  runtime_env:\n    working_dir: https://github.com/jiangjiawei1103/incr-upgrade-locust/archive/main.zip\n  deployments:\n  - name: SimpleDeployment\n    autoscaling_config:\n      min_replicas: 1\n      max_replicas: 2\n      target_ongoing_requests: 2\n      max_ongoing_requests: 6\n      upscale_delay_s: 0.5\n    ray_actor_options:\n      num_cpus: 1.0\n', 'upgradeStrategy': {'clusterUpgradeOptions': {'gatewayClassName': 'istio', 'intervalSeconds': 10, 'maxSurgePercent': 20, 'stepSizePercent': 10}, 'type': 'NewClusterWithIncrementalUpgrade'}}[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:404) | 
+=================================================================[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:405) |   SCENARIO : third-spec[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:406) |   RESULT   : PASS[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:407) |   DURATION : 282.33s[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:408) |   RESULTS  : /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/outputs/third-spec/[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:414) | 
+  All monotonicity invariants passed.[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:415) | =================================================================[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:420) | [runner] Stopping Locust (SIGINT)...[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:427) | [runner] Stopping kubectl port-forward...[0m
+[36;20m2026-04-09 10:15:34 [INFO] (runner.py:434) | [runner] Deleting RayService...[0m

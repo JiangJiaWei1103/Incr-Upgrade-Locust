@@ -3,7 +3,7 @@
 This script is used to generate a markdown report from the load test output.
 
 Usage:
-    python report.py --output-dir outputs/rollback/
+    python3 report.py --output-dir outputs/rollback/
 """
 
 import argparse

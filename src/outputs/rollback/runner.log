@@ -1,0 +1,47 @@
+[36;20m2026-04-09 10:05:19 [INFO] (runner.py:103) | [runner] Deploying RayService from /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/../ray-service.standard.yaml[0m
+[36;20m2026-04-09 10:05:19 [INFO] (runner.py:108) | [runner] Waiting for RayService ready...[0m
+[36;20m2026-04-09 10:05:48 [INFO] (runner.py:117) | [runner] Ready. Active cluster: simple-locust-vc2p2[0m
+[36;20m2026-04-09 10:05:48 [INFO] (runner.py:130) | [runner] Starting port-forward svc/simple-locust-gateway-istio 8080:80[0m
+[36;20m2026-04-09 10:05:49 [INFO] (runner.py:153) | [runner] Starting Locust (UI at http://localhost:8089)[0m
+[36;20m2026-04-09 10:05:49 [INFO] (runner.py:165) | [runner] Warming up Locust (RPS >= 1000 for 15s)...[0m
+[33;20m2026-04-09 10:05:49 [WARNING] (utils.py:281) | [get_locust_rps] Error getting Locust RPS: HTTPConnectionPool(host='localhost', port=8089): Max retries exceeded with url: /stats/requests (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8089): Failed to establish a new connection: [Errno 61] Connection refused"))[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:179) | [runner] Locust warmup done. RPS=1452[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:190) | 
+[runner] === Action 1/2: Waiting for upgrade ===[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:198) | [runner] Setting worker CPU to 500m[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:209) | [runner] 'upgrade' triggered.[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:190) | 
+[runner] === Action 2/2: Waiting for rollback ===[0m
+[36;20m2026-04-09 10:06:28 [INFO] (runner.py:398) |  [ 69.36s] upgrading    | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=1452 | UPG[0m
+[36;20m2026-04-09 10:06:32 [INFO] (runner.py:398) |  [ 72.58s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1445 | UPG[0m
+[36;20m2026-04-09 10:06:35 [INFO] (runner.py:398) |  [ 75.75s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1283 | UPG[0m
+[36;20m2026-04-09 10:06:38 [INFO] (runner.py:398) |  [ 78.92s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1253 | UPG[0m
+[36;20m2026-04-09 10:06:41 [INFO] (runner.py:398) |  [ 82.10s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1223 | UPG[0m
+[36;20m2026-04-09 10:06:44 [INFO] (runner.py:398) |  [ 85.28s] upgrading    | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1309 | UPG[0m
+[36;20m2026-04-09 10:06:47 [INFO] (runner.py:398) |  [ 88.45s] upgrading    | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1334 | UPG[0m
+[36;20m2026-04-09 10:06:51 [INFO] (runner.py:398) |  [ 91.64s] upgrading    | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1333 | UPG[0m
+[36;20m2026-04-09 10:06:51 [INFO] (runner.py:398) |  [ 91.64s] upgrading    | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1333 | UPG[0m
+[36;20m2026-04-09 10:06:51 [INFO] (runner.py:198) | [runner] Setting worker CPU to 2[0m
+[36;20m2026-04-09 10:06:51 [INFO] (runner.py:209) | [runner] 'rollback' triggered.[0m
+[36;20m2026-04-09 10:06:51 [INFO] (runner.py:253) | 
+[runner] === Waiting for completion ===[0m
+[36;20m2026-04-09 10:06:54 [INFO] (runner.py:398) |  [ 95.04s] rolling_back | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1333 | UPG RB[0m
+[36;20m2026-04-09 10:06:57 [INFO] (runner.py:398) |  [ 98.22s] rolling_back | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1333 | UPG RB[0m
+[36;20m2026-04-09 10:07:00 [INFO] (runner.py:398) |  [101.40s] rolling_back | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1333 | UPG RB[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:272) | 
+[runner] Completed at 103.52s[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:398) |  [103.52s] complete     | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=1333 | [0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:293) | [runner] Checking RayService spec after completion...[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:314) | [runner] RayService spec: {'rayClusterConfig': {'enableInTreeAutoscaling': True, 'headGroupSpec': {'rayStartParams': {'num-cpus': '0'}, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'name': 'ray-head', 'ports': [{'containerPort': 6379, 'name': 'gcs-server', 'protocol': 'TCP'}, {'containerPort': 8265, 'name': 'dashboard', 'protocol': 'TCP'}, {'containerPort': 10001, 'name': 'client', 'protocol': 'TCP'}, {'containerPort': 8000, 'name': 'serve', 'protocol': 'TCP'}]}]}}}, 'rayVersion': '2.49.2', 'workerGroupSpecs': [{'groupName': 'small-group', 'maxReplicas': 2, 'minReplicas': 1, 'numOfHosts': 1, 'replicas': 1, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'lifecycle': {'preStop': {'exec': {'command': ['/bin/sh', '-c', 'ray stop']}}}, 'name': 'ray-worker', 'resources': {'limits': {'cpu': '2', 'memory': '2Gi'}, 'requests': {'cpu': '2', 'memory': '2Gi'}}}]}}}]}, 'serveConfigV2': 'applications:\n- name: simple_app\n  import_path: simple_serve.app\n  route_prefix: /test\n  runtime_env:\n    working_dir: https://github.com/jiangjiawei1103/incr-upgrade-locust/archive/main.zip\n  deployments:\n  - name: SimpleDeployment\n    autoscaling_config:\n      min_replicas: 1\n      max_replicas: 2\n      target_ongoing_requests: 2\n      max_ongoing_requests: 6\n      upscale_delay_s: 0.5\n    ray_actor_options:\n      num_cpus: 2.0\n', 'upgradeStrategy': {'clusterUpgradeOptions': {'gatewayClassName': 'istio', 'intervalSeconds': 10, 'maxSurgePercent': 50, 'stepSizePercent': 25}, 'type': 'NewClusterWithIncrementalUpgrade'}}[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:404) | 
+=================================================================[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:405) |   SCENARIO : rollback[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:406) |   RESULT   : PASS[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:407) |   DURATION : 103.57s[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:408) |   RESULTS  : /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/outputs/rollback/[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:414) | 
+  All monotonicity invariants passed.[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:415) | =================================================================[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:420) | [runner] Stopping Locust (SIGINT)...[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:427) | [runner] Stopping kubectl port-forward...[0m
+[36;20m2026-04-09 10:07:03 [INFO] (runner.py:434) | [runner] Deleting RayService...[0m

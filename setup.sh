@@ -4,8 +4,7 @@ set -euo pipefail
 echo "Setting up environment for local incremental upgrade/rollback tests..."
 echo ""
 
-# ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../kuberay" && pwd)"
-ROOT_DIR=/Users/abaowei/Desktop/Fun/my_ray/kuberay
+ROOT_DIR="${HOME}/Desktop/Fun/my_ray/kuberay"
 cd "${ROOT_DIR}"
 echo "Using ROOT_DIR=${ROOT_DIR}"
 
@@ -84,7 +83,3 @@ kubectl wait \
 popd >/dev/null
 
 echo "=== Done ==="
-# echo "=== Done. Cluster is ready for incremental-upgrade + Locust load testing. ==="
-# echo "You can now run (from ${ROOT_DIR}/ray-operator):"
-# echo "  KUBERAY_TEST_TIMEOUT_SHORT=1m KUBERAY_TEST_TIMEOUT_MEDIUM=5m KUBERAY_TEST_TIMEOUT_LONG=10m \\"
-# echo "    go test -timeout 30m -v ./test/e2eincrementalupgrade -run 'WithLocust'"
