@@ -137,6 +137,76 @@ def _k8s_cpu_to_num_cpus(cpu: str) -> float:
     return v
 
 
+def oomkill_head_pod(
+    cluster_name: str,
+    namespace: str = "default",
+    *,
+    logger: logging.Logger | None = None,
+) -> None:
+    """Crash the head Pod of a RayCluster by triggering OOMKilled in the ray-head container."""
+    result = subprocess.run(
+        ["kubectl", "get", "pods",
+         "-n", namespace,
+         "-l", f"ray.io/cluster={cluster_name},ray.io/node-type=head",
+         "-o", "jsonpath={.items[0].metadata.name}"],
+        capture_output=True, text=True,
+    )
+    pod_name = result.stdout.strip()
+    if result.returncode != 0 or not pod_name:
+        raise RuntimeError(f"Head pod not found for cluster {cluster_name}: {result.stderr}")
+
+    if logger is not None:
+        logger.info(f"[oomkill_head_pod] Crashing head pod {pod_name} via OOMKilled")
+
+    subprocess.run(
+        ["kubectl", "exec", pod_name,
+         "-n", namespace,
+         "-c", "ray-head",
+         "--", "python", "-c",
+         "x = ['A' * 10**8 for _ in range(10**4)]"],
+        capture_output=True, text=True,
+    )
+
+
+def wait_for_oomkilled(
+    cluster_name: str,
+    namespace: str = "default",
+    timeout: float = 60,
+    *,
+    logger: logging.Logger | None = None,
+) -> None:
+    """Wait until the ray-head container status is OOMKilled."""
+    ddl = time.time() + timeout
+    while time.time() < ddl:
+        result = subprocess.run(
+            ["kubectl", "get", "pods",
+             "-n", namespace,
+             "-l", f"ray.io/cluster={cluster_name},ray.io/node-type=head",
+             "-o", "json"],
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            time.sleep(1)
+            continue
+
+        pods = json.loads(result.stdout).get("items", [])
+        for pod in pods:
+            for cs in pod.get("status", {}).get("containerStatuses", []):
+                if cs.get("name") != "ray-head":
+                    continue
+                # Check last terminated state and current waiting state.
+                terminated = cs.get("lastState", {}).get("terminated", {})
+                waiting = cs.get("state", {}).get("waiting", {})
+                if terminated.get("reason") == "OOMKilled" or waiting.get("reason") == "OOMKilled":
+                    if logger:
+                        logger.info("[wait_for_oomkilled] ray-head container confirmed OOMKilled")
+                    return
+
+        time.sleep(0.1)
+
+    raise TimeoutError(f"ray-head container did not reach OOMKilled within {timeout}s")
+
+
 def extract_status(rs_json: dict) -> dict:
     """Extract RayService status fields."""
     if len(rs_json) == 0:
@@ -264,6 +334,7 @@ class StatusChecker:
 
     def stop(self) -> None:
         self.active = False
+
 
 def get_locust_rps(
     web_port: int,

@@ -1,0 +1,50 @@
+name: rollback-with-pending-crashed
+description: |-
+  Expected process: A -> B -> A, complete rollback even if pending crashed
+  Action triggering conditions:
+    1. Trigger upgrade once the Locust warmup is done
+    2. Trigger rollback when pending TRP >= 25%
+    3. Crash the pending cluster just before rollback completes
+
+rayservice:
+  name: simple-locust
+  namespace: default
+  yaml: ../ray-service.standard.yaml
+
+locust:
+  locustfile: ../locustfile_simple.py
+  users: 10
+  spawn_rate: 10
+  web_port: 8089
+  # You might need to lower the RPS threshold based on your test environment.
+  warmup_rps: 1000
+  warmup_stable_seconds: 15
+
+actions:
+  - name: upgrade
+    worker_cpu: "500m"
+
+  - name: rollback
+    when:
+      pending_trp_gte: 25
+    worker_cpu: "2"
+
+  - name: oomkill
+    when:
+      active_tc_gte: 100
+      active_trp_gte: 100
+      pending_tc_gte: 1
+
+completion:
+  active_trp: 100
+  worker_cpu: "2"
+  # Must meet the folloiwng conditions.
+  # upgrading: false
+  # rolling_back: false
+  # pending_cluster_empty: true
+
+timeouts:
+  rayservice_ready: 120
+  locust_warmup: 120
+  action: 300
+  completion: 300

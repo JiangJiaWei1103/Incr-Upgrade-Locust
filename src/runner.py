@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 import yaml
 
-from utils import RayServiceClient, StatusWriter, StatusChecker, get_locust_rps, extract_status, CustomFormatter
+from utils import RayServiceClient, oomkill_head_pod, wait_for_oomkilled, StatusWriter, StatusChecker, get_locust_rps, extract_status, CustomFormatter
 
 
 class Runner:
@@ -194,9 +194,17 @@ class Runner:
 
             # Change RayService cluster spec to trigger upgrade/rollback.
             # TODO(jwj): Need to modify serve config to distinguish between old and new serve applications. 
-            cpu = action["worker_cpu"]
-            self.logger.info("[runner] Setting worker CPU to %s", cpu)
-            self.client.put(cpu)
+            cpu = action.get("worker_cpu")
+            if name == "oomkill":
+                assert cpu is None, f"oomkill do not need worker CPU change"
+                self.logger.info("[runner] Crash the pending head Pod with OOMKilled")
+                st = extract_status(self.client.get())
+                # TODO(jwj): Do not hard code namespace here.
+                oomkill_head_pod(st["pending_cluster"], logger=self.logger)
+                wait_for_oomkilled(st["pending_cluster"], logger=self.logger)
+            else:
+                self.logger.info("[runner] Setting worker CPU to %s", cpu)
+                self.client.put(cpu)
 
             if name == "upgrade":
                 self.phase = "upgrading"
@@ -330,7 +338,15 @@ class Runner:
             raise ValueError("Must specify at least one condition")
         
         for key, val in condition.items():
-            if key == "pending_trp_gte":
+            if key == "pending_tc_gte":
+                v = st.get("pending_tc")
+                if v is None or v < val:
+                    return False
+            elif key == "active_tc_gte":
+                v = st.get("active_tc")
+                if v is None or v < val:
+                    return False
+            elif key == "pending_trp_gte":
                 v = st.get("pending_trp")
                 if v is None or v < val:
                     return False

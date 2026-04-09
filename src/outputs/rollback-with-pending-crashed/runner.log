@@ -1,0 +1,55 @@
+[36;20m2026-04-09 11:30:55 [INFO] (runner.py:103) | [runner] Deploying RayService from /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/../ray-service.standard.yaml[0m
+[36;20m2026-04-09 11:30:55 [INFO] (runner.py:108) | [runner] Waiting for RayService ready...[0m
+[36;20m2026-04-09 11:31:18 [INFO] (runner.py:117) | [runner] Ready. Active cluster: simple-locust-mlqv9[0m
+[36;20m2026-04-09 11:31:18 [INFO] (runner.py:130) | [runner] Starting port-forward svc/simple-locust-gateway-istio 8080:80[0m
+[36;20m2026-04-09 11:31:19 [INFO] (runner.py:153) | [runner] Starting Locust (UI at http://localhost:8089)[0m
+[36;20m2026-04-09 11:31:19 [INFO] (runner.py:165) | [runner] Warming up Locust (RPS >= 1000 for 15s)...[0m
+[33;20m2026-04-09 11:31:19 [WARNING] (utils.py:352) | [get_locust_rps] Error getting Locust RPS: HTTPConnectionPool(host='localhost', port=8089): Max retries exceeded with url: /stats/requests (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8089): Failed to establish a new connection: [Errno 61] Connection refused"))[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:179) | [runner] Locust warmup done. RPS=1498[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:190) | 
+[runner] === Action 1/3: Waiting for upgrade ===[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:206) | [runner] Setting worker CPU to 500m[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:217) | [runner] 'upgrade' triggered.[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:190) | 
+[runner] === Action 2/3: Waiting for rollback ===[0m
+[36;20m2026-04-09 11:32:00 [INFO] (runner.py:414) |  [ 65.29s] upgrading    | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=1498 | UPG[0m
+[36;20m2026-04-09 11:32:04 [INFO] (runner.py:414) |  [ 68.51s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1482 | UPG[0m
+[36;20m2026-04-09 11:32:07 [INFO] (runner.py:414) |  [ 71.70s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1291 | UPG[0m
+[36;20m2026-04-09 11:32:10 [INFO] (runner.py:414) |  [ 74.86s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1217 | UPG[0m
+[36;20m2026-04-09 11:32:13 [INFO] (runner.py:414) |  [ 78.06s] upgrading    | Active TC=100 TRP=100 | Pending TC=  0 TRP=  0 | RPS=1194 | UPG[0m
+[36;20m2026-04-09 11:32:16 [INFO] (runner.py:414) |  [ 81.24s] upgrading    | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1207 | UPG[0m
+[36;20m2026-04-09 11:32:20 [INFO] (runner.py:414) |  [ 84.42s] upgrading    | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1303 | UPG[0m
+[36;20m2026-04-09 11:32:23 [INFO] (runner.py:414) |  [ 87.60s] upgrading    | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1304 | UPG[0m
+[36;20m2026-04-09 11:32:23 [INFO] (runner.py:414) |  [ 87.60s] upgrading    | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1304 | UPG[0m
+[36;20m2026-04-09 11:32:23 [INFO] (runner.py:206) | [runner] Setting worker CPU to 2[0m
+[36;20m2026-04-09 11:32:23 [INFO] (runner.py:217) | [runner] 'rollback' triggered.[0m
+[36;20m2026-04-09 11:32:23 [INFO] (runner.py:190) | 
+[runner] === Action 3/3: Waiting for oomkill ===[0m
+[36;20m2026-04-09 11:32:26 [INFO] (runner.py:414) |  [ 91.01s] rolling_back | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1304 | UPG RB[0m
+[36;20m2026-04-09 11:32:29 [INFO] (runner.py:414) |  [ 94.18s] rolling_back | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1304 | UPG RB[0m
+[36;20m2026-04-09 11:32:33 [INFO] (runner.py:414) |  [ 97.36s] rolling_back | Active TC=100 TRP= 75 | Pending TC= 50 TRP= 25 | RPS=1304 | UPG RB[0m
+[36;20m2026-04-09 11:32:34 [INFO] (runner.py:414) |  [ 98.42s] rolling_back | Active TC=100 TRP=100 | Pending TC= 50 TRP=  0 | RPS=1304 | UPG RB[0m
+[36;20m2026-04-09 11:32:34 [INFO] (runner.py:200) | [runner] Crash the pending head Pod with OOMKilled[0m
+[36;20m2026-04-09 11:32:34 [INFO] (utils.py:159) | [oomkill_head_pod] Crashing head pod simple-locust-ndvht-head-gb4wn via OOMKilled[0m
+[36;20m2026-04-09 11:32:42 [INFO] (utils.py:202) | [wait_for_oomkilled] ray-head container confirmed OOMKilled[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:217) | [runner] 'oomkill' triggered.[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:261) | 
+[runner] === Waiting for completion ===[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:414) |  [107.15s] rolling_back | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=   ? | [0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:280) | 
+[runner] Completed at 107.15s[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:414) |  [107.15s] complete     | Active TC=100 TRP=100 | Pending TC=None TRP=None | RPS=   ? | [0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:301) | [runner] Checking RayService spec after completion...[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:322) | [runner] RayService spec: {'rayClusterConfig': {'enableInTreeAutoscaling': True, 'headGroupSpec': {'rayStartParams': {'num-cpus': '0'}, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'name': 'ray-head', 'ports': [{'containerPort': 6379, 'name': 'gcs-server', 'protocol': 'TCP'}, {'containerPort': 8265, 'name': 'dashboard', 'protocol': 'TCP'}, {'containerPort': 10001, 'name': 'client', 'protocol': 'TCP'}, {'containerPort': 8000, 'name': 'serve', 'protocol': 'TCP'}]}]}}}, 'rayVersion': '2.49.2', 'workerGroupSpecs': [{'groupName': 'small-group', 'maxReplicas': 2, 'minReplicas': 1, 'numOfHosts': 1, 'replicas': 1, 'template': {'spec': {'containers': [{'image': 'rayproject/ray:2.49.2', 'lifecycle': {'preStop': {'exec': {'command': ['/bin/sh', '-c', 'ray stop']}}}, 'name': 'ray-worker', 'resources': {'limits': {'cpu': '2', 'memory': '2Gi'}, 'requests': {'cpu': '2', 'memory': '2Gi'}}}]}}}]}, 'serveConfigV2': 'applications:\n- name: simple_app\n  import_path: simple_serve.app\n  route_prefix: /test\n  runtime_env:\n    working_dir: https://github.com/jiangjiawei1103/incr-upgrade-locust/archive/main.zip\n  deployments:\n  - name: SimpleDeployment\n    autoscaling_config:\n      min_replicas: 1\n      max_replicas: 2\n      target_ongoing_requests: 2\n      max_ongoing_requests: 6\n      upscale_delay_s: 0.5\n    ray_actor_options:\n      num_cpus: 2.0\n', 'upgradeStrategy': {'clusterUpgradeOptions': {'gatewayClassName': 'istio', 'intervalSeconds': 10, 'maxSurgePercent': 50, 'stepSizePercent': 25}, 'type': 'NewClusterWithIncrementalUpgrade'}}[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:420) | 
+=================================================================[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:421) |   SCENARIO : rollback-with-pending-crashed[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:422) |   RESULT   : PASS[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:423) |   DURATION : 107.22s[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:424) |   RESULTS  : /Users/abaowei/Desktop/Fun/my_ray/dev/incr_upgrade/incr_upgrade_locust/src/outputs/rollback-with-pending-crashed/[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:430) | 
+  All monotonicity invariants passed.[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:431) | =================================================================[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:436) | [runner] Stopping Locust (SIGINT)...[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:443) | [runner] Stopping kubectl port-forward...[0m
+[36;20m2026-04-09 11:32:42 [INFO] (runner.py:450) | [runner] Deleting RayService...[0m
